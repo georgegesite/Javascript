@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>CRUD</title>
+	<style>
+		table, th, td {
+  			border: 1px solid black;
+  			border-collapse: collapse;
+  			padding: 10px;
+		}
+
+		input[type="text"] {
+			padding: 5px;
+			margin-right: 10px;
+			margin-bottom: 10px;
+			border-radius: 5px;
+			border: 1px solid #ccc;
+			font-size: 16px;
+		}
+
+	</style>
+</head>
+<body>
+	<h1>CRUD HTML</h1>
+
+	<form>
+		<label for="fname">First name:</label>
+		<input type="text" id="fname" name="fname" required>
+
+		<label for="lname">Last name:</label>
+		<input type="text" id="lname" name="lname" required>
+
+		<input type="submit" value="+">
+	</form>
+
+	<label for="search">Search:</label>
+	<input type="text" id="search" name="search">
+	<button onclick="searchNames()">FIND</button>
+
+	<table width = 350>
+		<thead width = 350>
+			<tr>
+				<th>First name</th>
+				<th>Last name</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody id="nameTable">
+			
+		</tbody>
+	</table>
+	<script>
+		document.querySelector('form').addEventListener('submit', function(e) {
+			e.preventDefault();
+			let fname = document.querySelector('#fname').value.trim();
+			let lname = document.querySelector('#lname').value.trim();
+			if (fname && lname) {
+				let newRow = document.createElement('tr');
+				newRow.innerHTML = `<td>${fname}</td><td>${lname}</td><td><button onclick="editRow(this)">Edit</button> <button onclick="deleteRow(this)">Delete</button></td>`;
+				document.querySelector('#nameTable').appendChild(newRow);
+				document.querySelector('form').reset();
+			}
+		});
+		
+		function editRow(button) {
+    		let row = button.parentNode.parentNode;
+    		let firstName = row.querySelector('td:first-child');
+    		let lastName = row.querySelector('td:nth-child(2)');
+    		let firstNameInput = document.createElement('input');
+    		firstNameInput.type = 'text';
+    		firstNameInput.value = firstName.textContent;
+    		let lastNameInput = document.createElement('input');
+    		lastNameInput.type = 'text';
+    		lastNameInput.value = lastName.textContent;
+    		firstName.textContent = '';
+    		lastName.textContent = '';
+    		firstName.appendChild(firstNameInput);
+   			 lastName.appendChild(lastNameInput);
+    		let editButton = row.querySelector('button:first-child');
+    		let deleteButton = row.querySelector('button:last-child');
+    		editButton.textContent = 'Save';
+    		editButton.onclick = function() {
+        		let fname = firstNameInput.value.trim();
+        		let lname = lastNameInput.value.trim();
+        		if (fname && lname) {
+            	firstName.textContent = fname;
+            	lastName.textContent = lname;
+            	editButton.textContent = 'Edit';
+            	editButton.onclick = function() {
+                	editRow(this);
+           		 };
+            	deleteButton.disabled = false; // Re-enable delete button
+        	} else {
+           		 alert('Please enter a first and last name');
+        	}
+    	};
+    	deleteButton.disabled = true;
+		}	
+
+		function deleteRow(button) {
+    		let row = button.parentNode.parentNode;
+    		row.parentNode.removeChild(row);
+		}
+
+		function searchNames() {
+			let searchTerm = document.querySelector('#search').value.trim().toLowerCase();
+			let tableRows = document.querySelectorAll('#nameTable tr');
+			tableRows.forEach(row => {
+				let firstName = row.querySelector('td:first-child').textContent.trim().toLowerCase();
+				let lastName = row.querySelector('td:nth-child(2)').textContent.trim().toLowerCase();
+				if (firstName.includes(searchTerm) || lastName.includes(searchTerm)) {
+					row.style.color = 'red';
+				} else {
+					row.style.color = 'black';
+				}
+			});
+		}
+	</script>
+
+</body>
+</html>
